@@ -69,11 +69,18 @@ func SendInitMsg(ctx context.Context, tgBot *tgbotapi.BotAPI, flaunch *screener.
 					continue
 				}
 				defer resp.Body.Close()
+				if resp.StatusCode != http.StatusOK {
+					fmt.Printf("Non-OK status: %d %s\n", resp.StatusCode, resp.Status)
+					body, _ := io.ReadAll(resp.Body)
+					fmt.Printf("Response body: %s\n", string(body))
+					continue
+				}
 				body, err := io.ReadAll(resp.Body)
 				if err != nil {
 					fmt.Printf("Error ReadAll: %v\n", err)
 					continue
 				}
+				log.Println(string(body))
 				var pairs []Pair
 				err = json.Unmarshal(body, &pairs)
 				if err != nil {
@@ -85,6 +92,7 @@ func SendInitMsg(ctx context.Context, tgBot *tgbotapi.BotAPI, flaunch *screener.
 					text := fmt.Sprintf(
 						"🚀 *New BNB Token Event found!*\n\n"+
 							"🪙 *TOKEN INFO*\n"+
+							"├ Ping Count: %v\n"+
 							"├ MarketCap: %v\n"+
 							"├ Name: *%s*\n"+
 							"├ Symbol: *%s*\n"+
@@ -94,6 +102,7 @@ func SendInitMsg(ctx context.Context, tgBot *tgbotapi.BotAPI, flaunch *screener.
 							"📦 *BLOCKCHAIN INFO*\n"+
 							"├ Block: `%d`\n"+
 							"└ TxHash: `%s`",
+						flaunch.Token_count[token.TInfo.Address.Hex()]+1,
 						pair.MarketCap,
 						pair.BaseToken.Name,
 						pair.BaseToken.Symbol,
@@ -150,6 +159,7 @@ func SendInitMsg(ctx context.Context, tgBot *tgbotapi.BotAPI, flaunch *screener.
 						continue
 					}
 					log.Println("Successful send event to Bot!")
+					flaunch.Token_count[token.TInfo.Address.Hex()]++
 				}
 
 			}

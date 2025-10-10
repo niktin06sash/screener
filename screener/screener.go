@@ -48,6 +48,7 @@ type ScreenerConfig struct {
 	Tokenchan      chan TokenData
 	watchedsWallet []common.Hash
 	txMap          map[common.Hash]bool
+	Token_count    map[string]int
 }
 
 func getWatchedWallets() []common.Hash {
@@ -70,7 +71,7 @@ func getWatchedWallets() []common.Hash {
 }
 func getWatchedWalletsOS() []common.Hash {
 	pbs := []common.Hash{}
-	for i := 1; i <= 48; i++ {
+	for i := 1; i <= 60; i++ {
 		pubKey := os.Getenv(fmt.Sprintf("WATCHED_WALLET_%s", strconv.Itoa(i)))
 		addr := common.HexToHash(pubKey)
 		pbs = append(pbs, addr)
@@ -109,6 +110,7 @@ func NewScreenerConfig(ctx context.Context) (*ScreenerConfig, error) {
 		watchedsWallet: watcheds,
 		clients:        clients,
 		txMap:          make(map[common.Hash]bool),
+		Token_count:    make(map[string]int),
 	}
 	return str, nil
 }
