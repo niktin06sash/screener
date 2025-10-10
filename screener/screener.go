@@ -70,8 +70,10 @@ func getWatchedWallets() []common.Hash {
 	return pbs
 }
 func getWatchedWalletsOS() []common.Hash {
+	walletNum := os.Getenv("WALLET_NUM")
+	num, _ := strconv.Atoi(walletNum)
 	pbs := []common.Hash{}
-	for i := 1; i <= 60; i++ {
+	for i := 1; i <= num; i++ {
 		pubKey := os.Getenv(fmt.Sprintf("WATCHED_WALLET_%s", strconv.Itoa(i)))
 		addr := common.HexToHash(pubKey)
 		pbs = append(pbs, addr)
@@ -79,8 +81,10 @@ func getWatchedWalletsOS() []common.Hash {
 	return pbs
 }
 func getNodesOS() []string {
+	nodesNum := os.Getenv("NODES_NUM")
+	num, _ := strconv.Atoi(nodesNum)
 	pbs := []string{}
-	for i := 2; i <= 11; i++ {
+	for i := 2; i <= num; i++ {
 		node := os.Getenv(fmt.Sprintf("quick%swss_base", strconv.Itoa(i)))
 		pbs = append(pbs, node)
 	}
